@@ -129,5 +129,16 @@ def view_expenses():
     )
 
 
+@app.route("/delete/<int:expense_id>", methods=["POST"])
+def delete_expense(expense_id):
+    models.delete_expense(expense_id)
+    flash("Entry deleted.", "success")
+    # send the user back to wherever they clicked delete from
+    return redirect(request.referrer or url_for("view_expenses"))
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    import os
+    port = int(os.environ.get("PORT", 5000))
+    debug = os.environ.get("FLASK_DEBUG", "true").lower() == "true"
+    app.run(host="0.0.0.0", port=port, debug=debug)

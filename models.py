@@ -128,6 +128,13 @@ def get_recent(limit=10):
     return [dict(r) for r in rows]
 
 
+def delete_expense(expense_id):
+    conn = get_connection()
+    conn.execute("DELETE FROM expenses WHERE id = ?", (expense_id,))
+    conn.commit()
+    conn.close()
+
+
 def convert_date(datestr):
     """Same behaviour as the original app: blank -> today, else DD/MM/YYYY -> ISO."""
     if not datestr or not datestr.strip():

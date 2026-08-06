@@ -298,6 +298,24 @@ input:focus, select:focus {
     border-top: 1px solid var(--rule);
 }
 
+.btn-delete {
+    background: transparent;
+    border: 1px solid var(--rule);
+    color: var(--ink-soft);
+    width: 26px;
+    height: 26px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 0.8rem;
+    line-height: 1;
+    transition: all 0.15s ease;
+}
+.btn-delete:hover {
+    background: var(--expense-red);
+    border-color: var(--expense-red);
+    color: white;
+}
+
 .empty-state {
     text-align: center;
     padding: 40px 20px;
