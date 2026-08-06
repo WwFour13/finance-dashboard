@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Ledger{% endblock %} — Personal Finance Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="ledger-wrap">
+    <header class="ledger-header">
+        <div class="ledger-header-inner">
+            <a href="{{ url_for('dashboard') }}" class="brand">
+                <span class="brand-mark">§</span> Ledger
+            </a>
+            <nav class="ledger-nav">
+                <a href="{{ url_for('dashboard') }}" class="{{ 'active' if request.endpoint == 'dashboard' }}">Overview</a>
+                <a href="{{ url_for('add_expense') }}" class="{{ 'active' if request.endpoint == 'add_expense' }}">Add Entry</a>
+                <a href="{{ url_for('view_expenses') }}" class="{{ 'active' if request.endpoint == 'view_expenses' }}">All Entries</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="ledger-main">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="ledger-footer">
+        <span>Personal Finance Analytics Dashboard — built with Flask &amp; SQLite</span>
+    </footer>
+</div>
+</body>
+</html>

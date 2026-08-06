@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Overview{% endblock %}
+{% block content %}
+
+<div class="eyebrow">Overview</div>
+<h1 style="font-family:'Fraunces',serif; margin:4px 0 24px; font-size:1.8rem;">Where the money's going</h1>
+
+<div class="stat-row">
+    <div class="stat-card">
+        <span class="eyebrow">All-Time Spend</span>
+        <span class="stat-value">£{{ "%.2f"|format(all_time_total) }}</span>
+    </div>
+    <div class="stat-card">
+        <span class="eyebrow">This Month</span>
+        <span class="stat-value">
+            £{{ "%.2f"|format(this_month_total) }}
+            {% if delta_pct is not none %}
+                <span class="stat-delta {{ 'up' if delta_pct > 0 else 'down' }}">
+                    {{ "+%.0f"|format(delta_pct) if delta_pct > 0 else "%.0f"|format(delta_pct) }}%
+                </span>
+            {% endif %}
+        </span>
+    </div>
+    <div class="stat-card">
+        <span class="eyebrow">Last Month</span>
+        <span class="stat-value">£{{ "%.2f"|format(last_month_total) }}</span>
+    </div>
+    <div class="stat-card">
+        <span class="eyebrow">Categories Tracked</span>
+        <span class="stat-value">{{ breakdown|length }}</span>
+    </div>
+</div>
+
+<div class="charts-grid">
+    <div class="card">
+        <div class="card-title">Spend by Category</div>
+        {% if breakdown %}
+            <canvas id="categoryChart" height="220"></canvas>
+        {% else %}
+            <div class="empty-state">No entries yet — add your first expense to see this fill in.</div>
+        {% endif %}
+    </div>
+    <div class="card">
+        <div class="card-title">Monthly Trend</div>
+        {% if trend %}
+            <canvas id="trendChart" height="220"></canvas>
+        {% else %}
+            <div class="empty-state">No entries yet.</div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-title">Recent Entries</div>
+    {% if recent %}
+    <table class="ledger-table">
+        <thead>
+            <tr><th>Date</th><th>Description</th><th>Category</th><th style="text-align:right;">Amount</th></tr>
+        </thead>
+        <tbody>
+        {% for e in recent %}
+            <tr>
+                <td>{{ e.date }}</td>
+                <td>{{ e.description }}</td>
+                <td><span class="category-pill">{{ e.category }}</span></td>
+                <td class="amount-cell">£{{ "%.2f"|format(e.gbp) }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <div class="empty-state">Nothing logged yet. <a href="{{ url_for('add_expense') }}">Add your first entry</a>.</div>
+    {% endif %}
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+const inkColor = "#1F2A3D";
+const gridColor = "#D3DDC9";
+const palette = ["#B0791F", "#2F6B3F", "#A63D2F", "#4A5568", "#6B8F71", "#C99A44", "#8C4A3B", "#3A5068", "#7A8C63", "#9C6B2B"];
+
+{% if breakdown %}
+new Chart(document.getElementById('categoryChart'), {
+    type: 'doughnut',
+    data: {
+        labels: [{% for b in breakdown %}"{{ b.category }}",{% endfor %}],
+        datasets: [{
+            data: [{% for b in breakdown %}{{ b.total }},{% endfor %}],
+            backgroundColor: palette,
+            borderColor: "#FBFDF9",
+            borderWidth: 2
+        }]
+    },
+    options: {
+        plugins: {
+            legend: { position: 'right', labels: { color: inkColor, font: { family: 'Inter', size: 11 } } }
+        }
+    }
+});
+{% endif %}
+
+{% if trend %}
+new Chart(document.getElementById('trendChart'), {
+    type: 'line',
+    data: {
+        labels: [{% for t in trend %}"{{ t.month }}",{% endfor %}],
+        datasets: [{
+            label: 'Spend (GBP)',
+            data: [{% for t in trend %}{{ t.total }},{% endfor %}],
+            borderColor: "#B0791F",
+            backgroundColor: "rgba(176, 121, 31, 0.12)",
+            fill: true,
+            tension: 0.25,
+            pointBackgroundColor: "#1F2A3D"
+        }]
+    },
+    options: {
+        plugins: { legend: { display: false } },
+        scales: {
+            x: { ticks: { color: inkColor, font: { family: 'JetBrains Mono', size: 10 } }, grid: { color: gridColor } },
+            y: { ticks: { color: inkColor, font: { family: 'JetBrains Mono', size: 10 } }, grid: { color: gridColor } }
+        }
+    }
+});
+{% endif %}
+</script>
+{% endblock %}

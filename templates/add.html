@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Add Entry{% endblock %}
+{% block content %}
+
+<div class="eyebrow">New Entry</div>
+<h1 style="font-family:'Fraunces',serif; margin:4px 0 24px; font-size:1.8rem;">Log an expense</h1>
+
+<div class="card">
+    <form method="POST" action="{{ url_for('add_expense') }}" id="expense-form">
+        <div class="form-grid">
+            <label for="description">Description</label>
+            <input type="text" id="description" name="description" value="{{ form.description or '' }}" required>
+
+            <label for="category">Category</label>
+            <select id="category" name="category">
+                {% for c in categories %}
+                    <option value="{{ c }}" {{ 'selected' if form.category == c }}>{{ c }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="currency">Currency</label>
+            <select id="currency" name="currency">
+                {% for c in currencies %}
+                    <option value="{{ c }}" {{ 'selected' if (form.currency or 'GBP') == c }}>{{ c }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="amount">Amount</label>
+            <input type="text" id="amount" name="amount" value="{{ form.amount or '' }}" required>
+
+            <label></label>
+            <div>
+                <button type="button" class="btn btn-secondary" id="preview-btn">Preview conversion to GBP</button>
+                <div class="conversion-preview" id="conversion-result" style="margin-top:8px; grid-column:auto;"></div>
+            </div>
+
+            <label for="date">Date</label>
+            <input type="text" id="date" name="date" value="{{ form.date or today }}" placeholder="DD/MM/YYYY">
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Save Entry</button>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+document.getElementById('preview-btn').addEventListener('click', async () => {
+    const amount = document.getElementById('amount').value;
+    const currency = document.getElementById('currency').value;
+    const resultEl = document.getElementById('conversion-result');
+    resultEl.textContent = "Converting...";
+    try {
+        const res = await fetch("{{ url_for('api_convert') }}", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ amount, currency })
+        });
+        const data = await res.json();
+        if (data.ok) {
+            resultEl.textContent = `≈ £${data.gbp.toFixed(2)}`;
+        } else {
+            resultEl.textContent = data.error || "Could not convert.";
+        }
+    } catch (e) {
+        resultEl.textContent = "Could not reach conversion service.";
+    }
+});
+</script>
+{% endblock %}
