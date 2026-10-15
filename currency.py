@@ -7,8 +7,6 @@ import math
 
 import requests
 
-SUPPORTED_CURRENCIES = ["GBP", "USD", "EUR", "INR", "JPY", "CAD", "AUD", "CHF"]
-
 # Backup exchange rates (1 unit of currency -> GBP), used if the live API call fails
 rates_to_gbp = {
     "GBP": 1.0,

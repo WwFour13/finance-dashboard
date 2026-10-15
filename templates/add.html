@@ -18,12 +18,8 @@
                 {% endfor %}
             </select>
 
-            <label for="currency">Currency</label>
-            <select id="currency" name="currency">
-                {% for c in currencies %}
-                    <option value="{{ c }}" {{ 'selected' if (form.currency or 'GBP') == c }}>{{ c }}</option>
-                {% endfor %}
-            </select>
+            <label  for="currency">Currency</label>
+            <input type="text" id="currency" name="currency" value="{{ (form.currency or 'GBP')|upper }}" placeholder="Currency code (e.g. USD)" autocomplete="off" required>
 
             <label for="amount">Amount</label>
             <input type="text" id="amount" name="amount" value="{{ form.amount or '' }}" required>

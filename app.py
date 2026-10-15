@@ -48,7 +48,7 @@ def add_expense():
     if request.method == "POST":
         description = request.form.get("description", "").strip()
         category = request.form.get("category", "Other")
-        currency_code = request.form.get("currency", "GBP")
+        currency_code = request.form.get("currency", "GBP").strip().upper()
         amount_str = request.form.get("amount", "").strip()
         date_str = request.form.get("date", "").strip()
 
@@ -78,7 +78,6 @@ def add_expense():
             return render_template(
                 "add.html",
                 categories=models.CATEGORIES,
-                currencies=currency.SUPPORTED_CURRENCIES,
                 today=date.today().strftime("%d/%m/%Y"),
                 form=request.form,
             )
@@ -90,7 +89,6 @@ def add_expense():
     return render_template(
         "add.html",
         categories=models.CATEGORIES,
-        currencies=currency.SUPPORTED_CURRENCIES,
         today=date.today().strftime("%d/%m/%Y"),
         form={},
     )

@@ -4,7 +4,7 @@ A full-stack Flask expense tracker with a SQLite backend, multi-currency support
 and category/trend analytics — evolved from an earlier Tkinter desktop prototype.
 
 ## Features
-- Add expenses in 8 currencies with live exchange-rate conversion to GBP (falls back to
+- Add expenses in currencies with live exchange-rate conversion to GBP (falls back to
   offline backup rates if the API is unreachable)
 - SQLite-backed storage (replaces the original flat-file storage)
 - Dashboard with category breakdown (doughnut chart) and 6-month spending trend (line chart)
